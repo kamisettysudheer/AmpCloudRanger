@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kamisettysudheer/ampcloudranger/backend/services"
+	services "github.com/kamisettysudheer/ampcloudranger/backend/services/aws"
 )
 
 func RegisterRoutes(router *gin.Engine) {
