@@ -2,13 +2,19 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kamisettysudheer/AmpCloudRanger/backend/services"
 )
 
 func RegisterRoutes(router *gin.Engine) {
 	// Metrics endpoint
 	router.GET("/metrics", func(c *gin.Context) {
-		// TODO: Implement metrics logic
-		c.JSON(200, gin.H{"message": "metrics endpoint"})
+		// Call the implemented metrics logic from services/aws/metrics.go
+		metricsData, err := services.GetAWSMetrics()
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, metricsData)
 	})
 
 	// Billing endpoint
