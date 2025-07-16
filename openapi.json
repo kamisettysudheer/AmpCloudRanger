@@ -1,0 +1,245 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "AmpCloudRanger API",
+    "version": "1.0.0",
+    "description": "API contract for metrics, billing, alerts, and exports"
+  },
+  "paths": {
+    "/metrics": {
+      "get": {
+        "summary": "Fetch cloud metrics",
+        "parameters": [
+          {
+            "name": "service",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metric data",
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "timestamp": "2025-07-01T00:00:00Z",
+                      "value": 23.5
+                    }
+                  ],
+                  "unit": "%",
+                  "metric": "CPUUtilization"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/billing": {
+      "get": {
+        "summary": "Get billing cost breakdown",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Billing data",
+            "content": {
+              "application/json": {
+                "example": {
+                  "total": 124.56,
+                  "currency": "USD",
+                  "breakdown": [
+                    {
+                      "group": "EC2",
+                      "amount": 72.34
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts": {
+      "get": {
+        "summary": "List alert rules",
+        "responses": {
+          "200": {
+            "description": "Alert rules",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "alert_123",
+                    "name": "High CPU on EC2",
+                    "active": true,
+                    "last_triggered": "2025-07-15T14:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an alert rule",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "High CPU on EC2",
+                "metric": "CPUUtilization",
+                "threshold": 80,
+                "comparison": "gt",
+                "duration": "5m",
+                "channel": "email",
+                "target": "sudheer@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Alert created",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "alert_123",
+                  "status": "created"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/export": {
+      "post": {
+        "summary": "Request export (PDF/Excel)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "format": "pdf",
+                "type": "billing",
+                "template_id": "default",
+                "from": "2025-07-01",
+                "to": "2025-07-07",
+                "email": "user@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Export queued",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "queued",
+                  "export_id": "exp_456"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/export/{id}": {
+      "get": {
+        "summary": "Get export status or download",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export status",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "ready",
+                  "download_url": "https://files.ampcloudranger.io/exp_456.pdf"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
