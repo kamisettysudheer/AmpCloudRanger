@@ -1,10 +1,44 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { LineChart } from '@mui/x-charts/LineChart';
 import { PieChart } from '@mui/x-charts/PieChart';
+import MetricsService from "./api/MetricsService";
 
 const Dashboard = () => {
+  const [metrics, setMetrics] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    MetricsService.fetchMetrics()
+      .then((data) => {
+        console.log("Fetched metrics:", data);
+        // Convert array to object for easy access
+        const metricsObj = {};
+        (data.metrics || []).forEach(m => {
+          metricsObj[m.metric] = m.data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        });
+        setMetrics(metricsObj);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message || "Failed to fetch metrics");
+        setLoading(false);
+      });
+  }, []);
+
+  // Prepare chart data
+  const cpuData = (metrics["CPUUtilization"] || []).map(d => d.value);
+  const cpuXAxis = (metrics["CPUUtilization"] || []).map((_, i) => i + 1);
+  const memData = (metrics["MemoryUtilization"] || []).map(d => d.value);
+  const memXAxis = (metrics["MemoryUtilization"] || []).map((_, i) => i + 1);
+  const netData = (metrics["NetworkIn"] || []).map(d => d.value);
+  const netXAxis = (metrics["NetworkIn"] || []).map((_, i) => i + 1);
+
+  if (loading) return <div style={{ padding: 32 }}>Loading metrics...</div>;
+  if (error) return <div style={{ padding: 32, color: 'red' }}>Error: {error}</div>;
+
   return (
     <div className="dashboard-container" style={{ padding: 32, fontFamily: 'sans-serif', background: '#fafbfc', minHeight: '100vh' }}>
       <h2 style={{ fontWeight: 600, fontSize: 28, marginBottom: 24 }}>Dashboard</h2>
@@ -43,9 +77,9 @@ const Dashboard = () => {
             <div style={{ flex: 1, textAlign: 'center' }}>
               <div style={{ fontSize: 14, marginBottom: 4 ,color:"black"}}>CPU Usage</div>
               <LineChart
-                xAxis={[{ data: [1, 2, 3, 4, 5, 6] }]}
-                series={[{ data: [2, 5, 2, 8, 1, 5] }]}
-                 height={260}
+                xAxis={[{ data: cpuXAxis }]}
+                series={[{ data: cpuData }]}
+                height={260}
                 width={320}
                 margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
                 grid={{ horizontal: false, vertical: false }}
@@ -54,9 +88,9 @@ const Dashboard = () => {
             <div style={{ flex: 1, textAlign: 'center' }}>
               <div style={{ fontSize: 14, marginBottom: 4 }}>Memory Usage</div>
               <LineChart
-                xAxis={[{ data: [1, 2, 3, 4, 5, 6] }]}
-                series={[{ data: [3, 4, 3, 6, 2, 6] }]}
-               height={260}
+                xAxis={[{ data: memXAxis }]}
+                series={[{ data: memData }]}
+                height={260}
                 width={320}
                 margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
                 grid={{ horizontal: false, vertical: false }}
@@ -65,9 +99,9 @@ const Dashboard = () => {
             <div style={{ flex: 1, textAlign: 'center' }}>
               <div style={{ fontSize: 14, marginBottom: 4 }}>Network Traffic</div>
               <LineChart
-                xAxis={[{ data: [1, 2, 3, 4, 5, 6] }]}
-                series={[{ data: [1, 2, 2, 3, 2, 4] }]}
-               height={260}
+                xAxis={[{ data: netXAxis }]}
+                series={[{ data: netData }]}
+                height={260}
                 width={320}
                 margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
                 grid={{ horizontal: false, vertical: false }}
