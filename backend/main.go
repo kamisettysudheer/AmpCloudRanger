@@ -2,13 +2,18 @@ package main
 
 import (
 	"log"
-
+	"github.com/kamisettysudheer/ampcloudranger/backend/config"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kamisettysudheer/ampcloudranger/backend/routes"
 )
 
 func main() {
+	 if err := config.InitPostgres(); err != nil {
+		log.Fatalf("Postgres init failed: %v", err)
+	}
+	log.Println("Postgres tables created successfully!")
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
