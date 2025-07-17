@@ -1,3 +1,13 @@
+.dark nav {
+  background: #23272f !important;
+  color: #f8fafc !important;
+}
+.dark nav a {
+  color: #b3c2ff !important;
+}
+.dark nav a:hover {
+  color: #fff !important;
+}
 /* Dark mode support */
 body.dark, .dark .dashboard-container {
   background: #181a20 !important;

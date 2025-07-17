@@ -80,17 +80,8 @@ const Dashboard = () => {
     color: dark ? '#e5e7eb' : '#000000'
   };
 
-  // Bar style for tables
-  const barStyle = { 
-    height: 10, 
-    background: dark ? '#374151' : '#e5e7eb', 
-    borderRadius: 4, 
-    width: 80, 
-    margin: '0 auto' 
-  };
-
-  if (loading) return <div style={{ padding: 32 }}>Loading metrics...</div>;
-  if (error) return <div style={{ padding: 32, color: 'red' }}>Error: {error}</div>;
+  if (loading) return <div style={{ padding: 32, color: dark ? '#e5e7eb' : '#222', background: dark ? '#181a20' : '#fafbfc' }}>Loading metrics...</div>;
+  if (error) return <div style={{ padding: 32, color: dark ? '#ffb4b4' : 'red', background: dark ? '#181a20' : '#fafbfc' }}>Error: {error}</div>;
 
 
   return (
@@ -313,7 +304,7 @@ const Dashboard = () => {
   );
 };
 
-// barStyle moved inside component to use theme
+const barStyle = { height: 10, background: '#e5e7eb', borderRadius: 4, width: 80, margin: '0 auto' };
 const legendDot = (color) => ({ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: color });
 
 export default Dashboard;

@@ -11,7 +11,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <nav style={{ padding: 16, background: '#f3f4f6', marginBottom: 24 }}>
+      <nav style={{ padding: 16, background: '#f3f4f6'}}>
         <Link to="/" style={{ marginRight: 16 }}>Home</Link>
         <Link to="/dashboard" style={{ marginRight: 16 }}>Dashboard</Link>
         <Link to="/billing-cost-explorer">AWS Billing Cost Explorer</Link>
