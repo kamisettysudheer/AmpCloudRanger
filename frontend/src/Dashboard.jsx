@@ -5,10 +5,38 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 import MetricsService from "./api/MetricsService";
 
+// Dummy cost fetcher for now, replace with backend call when available
+const fetchCostByService = async () => {
+  // Simulate backend response
+  return [
+    { id: 0, value: 1200, label: 'EC2' },
+    { id: 1, value: 800, label: 'RDS' },
+    { id: 2, value: 500, label: 'Lambda' },
+    { id: 3, value: 400, label: 'S3' },
+    { id: 4, value: 300, label: 'Other' },
+  ];
+};
+
 const Dashboard = () => {
+  // Dark mode toggle (must be before any early return)
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+  useEffect(() => {
+    document.body.classList.toggle('dark', dark);
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+  }, [dark]);
+
   const [metrics, setMetrics] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [costByService, setCostByService] = useState([]);
+
+
+
 
   useEffect(() => {
     MetricsService.fetchMetrics()
@@ -26,6 +54,8 @@ const Dashboard = () => {
         setError(err.message || "Failed to fetch metrics");
         setLoading(false);
       });
+    // Fetch cost by service (replace with backend call when available)
+    fetchCostByService().then(setCostByService);
   }, []);
 
   // Prepare chart data
@@ -36,109 +66,194 @@ const Dashboard = () => {
   const netData = (metrics["NetworkIn"] || []).map(d => d.value);
   const netXAxis = (metrics["NetworkIn"] || []).map((_, i) => i + 1);
 
+  // Chart colors based on theme
+  const chartColors = {
+    cpu: dark ? '#ff6347' : '#8884d8',
+    memory: dark ? '#00bfff' : '#ffc658', 
+    network: dark ? '#32cd32' : '#82ca9d',
+    pie: dark ? ['#ff6347', '#00bfff', '#32cd32', '#ffd700', '#dc143c'] : ['#8884d8', '#ffc658', '#82ca9d', '#ff8042', '#d0ed57']
+  };
+
+  // Chart styling for dark theme
+  const chartStyle = {
+    backgroundColor: dark ? '#23272f' : '#ffffff',
+    color: dark ? '#e5e7eb' : '#000000'
+  };
+
+  // Bar style for tables
+  const barStyle = { 
+    height: 10, 
+    background: dark ? '#374151' : '#e5e7eb', 
+    borderRadius: 4, 
+    width: 80, 
+    margin: '0 auto' 
+  };
+
   if (loading) return <div style={{ padding: 32 }}>Loading metrics...</div>;
   if (error) return <div style={{ padding: 32, color: 'red' }}>Error: {error}</div>;
 
+
   return (
-    <div className="dashboard-container" style={{ padding: 32, fontFamily: 'sans-serif', background: '#fafbfc', minHeight: '100vh' }}>
-      <h2 style={{ fontWeight: 600, fontSize: 28, marginBottom: 24 }}>Dashboard</h2>
+    <div className={`dashboard-container${dark ? ' dark' : ''}`} style={{ padding: 32, fontFamily: 'sans-serif', background: dark ? '#181a20' : '#fafbfc', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <h2 style={{ fontWeight: 600, fontSize: 28, color: dark ? '#e5e7eb' : '#222' }}>Dashboard</h2>
+        <button onClick={() => setDark(d => !d)} style={{ padding: '8px 18px', borderRadius: 8, border: '1.5px solid #bdbdbd', background: dark ? '#23272f' : '#fff', color: dark ? '#e5e7eb' : '#222', fontWeight: 500, fontSize: 16, cursor: 'pointer' }}>
+          {dark ? '☀️ Light' : '🌙 Dark'}
+        </button>
+      </div>
       <div style={{ display: 'flex', gap: 24, marginBottom: 24 }}>
-        <div className="dashboard-card" style={cardStyle}>
-          <div style={cardTitleStyle}>Total Spend</div>
-          <div style={cardValueStyle}>₹42,300</div>
+        <div className="dashboard-card">
+          <div className="card-title">Total Spend</div>
+          <div className="card-value">₹42,300</div>
         </div>
-        <div className="dashboard-card" style={cardStyle}>
-          <div style={cardTitleStyle}>Forecast</div>
-          <div style={cardValueStyle}>₹58 000</div>
+        <div className="dashboard-card">
+          <div className="card-title">Forecast</div>
+          <div className="card-value">₹58 000</div>
         </div>
-        <div className="dashboard-card" style={cardStyle}>
-          <div style={cardTitleStyle}>Active Alerts</div>
-          <div style={cardValueStyle}>3</div>
+        <div className="dashboard-card">
+          <div className="card-title">Active Alerts</div>
+          <div className="card-value">3</div>
         </div>
-        <div className="dashboard-card" style={cardStyle}>
-          <div style={cardTitleStyle}>Top Service</div>
-          <div style={cardValueStyle}>R2CZ</div>
+        <div className="dashboard-card">
+          <div className="card-title">Top Service</div>
+          <div className="card-value">R2CZ</div>
         </div>
       </div>
       <div style={{ display: 'flex', gap: 24, marginBottom: 24 }}>
-        <div style={{ ...panelStyle, flex: 2, minWidth: 0 }}>
+        <div className="panel" style={{ flex: 2, minWidth: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <div style={panelTitleStyle}>Metrics</div>
+            <div className="panel-title">Metrics</div>
             <div>
-              <select style={dropdownStyle}>
+              <select className="dropdown">
                 <option>Data Range</option>
               </select>
-              <select style={dropdownStyle}>
+              <select className="dropdown">
                 <option>Service</option>
               </select>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
             <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, marginBottom: 4 ,color:"black"}}>CPU Usage</div>
+              <div className="chart-label">CPU Usage</div>
               <LineChart
-                xAxis={[{ data: cpuXAxis }]}
-                series={[{ data: cpuData }]}
+                xAxis={[{ data: cpuXAxis, scaleType: 'point' }]}
+                series={[{ 
+                  data: cpuData, 
+                  color: chartColors.cpu,
+                  showMark: true
+                }]}
                 height={260}
                 width={320}
                 margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
                 grid={{ horizontal: false, vertical: false }}
+                sx={{
+                  '& .MuiChartsAxis-line': {
+                    stroke: dark ? '#374151' : '#e5e7eb',
+                  },
+                  '& .MuiChartsAxis-tick': {
+                    stroke: dark ? '#374151' : '#e5e7eb',
+                  },
+                  '& .MuiChartsAxis-tickLabel': {
+                    fill: dark ? '#9ca3af' : '#666',
+                  },
+                  backgroundColor: chartStyle.backgroundColor
+                }}
               />
             </div>
             <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, marginBottom: 4 }}>Memory Usage</div>
+              <div className="chart-label">Memory Usage</div>
               <LineChart
-                xAxis={[{ data: memXAxis }]}
-                series={[{ data: memData }]}
+                xAxis={[{ data: memXAxis, scaleType: 'point' }]}
+                series={[{ 
+                  data: memData, 
+                  color: chartColors.memory,
+                  showMark: true
+                }]}
                 height={260}
                 width={320}
                 margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
                 grid={{ horizontal: false, vertical: false }}
+                sx={{
+                  '& .MuiChartsAxis-line': {
+                    stroke: dark ? '#374151' : '#e5e7eb',
+                  },
+                  '& .MuiChartsAxis-tick': {
+                    stroke: dark ? '#374151' : '#e5e7eb',
+                  },
+                  '& .MuiChartsAxis-tickLabel': {
+                    fill: dark ? '#9ca3af' : '#666',
+                  },
+                  backgroundColor: chartStyle.backgroundColor
+                }}
               />
             </div>
             <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, marginBottom: 4 }}>Network Traffic</div>
+              <div className="chart-label">Network Traffic</div>
               <LineChart
-                xAxis={[{ data: netXAxis }]}
-                series={[{ data: netData }]}
+                xAxis={[{ data: netXAxis, scaleType: 'point' }]}
+                series={[{ 
+                  data: netData, 
+                  color: chartColors.network,
+                  showMark: true
+                }]}
                 height={260}
                 width={320}
                 margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
                 grid={{ horizontal: false, vertical: false }}
+                sx={{
+                  '& .MuiChartsAxis-line': {
+                    stroke: dark ? '#374151' : '#e5e7eb',
+                  },
+                  '& .MuiChartsAxis-tick': {
+                    stroke: dark ? '#374151' : '#e5e7eb',
+                  },
+                  '& .MuiChartsAxis-tickLabel': {
+                    fill: dark ? '#9ca3af' : '#666',
+                  },
+                  backgroundColor: chartStyle.backgroundColor
+                }}
               />
             </div>
           </div>
         </div>
-        <div style={{ ...panelStyle, flex: 1, minWidth: 260 }}>
-          <div style={panelTitleStyle}>Cost by Service</div>
+        <div className="panel" style={{ flex: 1, minWidth: 260 }}>
+          <div className="panel-title">Cost by Service</div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '16px 0' }}>
             <PieChart
               series={[{
-                data: [
-                  { id: 0, value: 10, label: 'ECZ' },
-                  { id: 1, value: 8, label: 'SS' },
-                  { id: 2, value: 6, label: 'RDS' },
-                  { id: 3, value: 4, label: 'Lambda' },
-                  { id: 4, value: 2, label: 'Others' },
-                ],
+                data: costByService,
+                highlightScope: { faded: 'global', highlighted: 'item' },
+                faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
               }]}
               width={160}
               height={160}
+              colors={chartColors.pie}
+              sx={{
+                '& .MuiChartsLegend-root': {
+                  fill: dark ? '#e5e7eb' : '#000',
+                },
+                '& .MuiChartsTooltip-root': {
+                  backgroundColor: dark ? '#23272f' : '#fff',
+                  color: dark ? '#e5e7eb' : '#000',
+                  border: `1px solid ${dark ? '#374151' : '#e5e7eb'}`,
+                },
+                backgroundColor: chartStyle.backgroundColor
+              }}
             />
           </div>
-          <div style={{ fontSize: 14, marginLeft: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={legendDot('#8884d8')}></span>ECZ</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={legendDot('#82ca9d')}></span>SS</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={legendDot('#ffc658')}></span>RDS</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={legendDot('#ff8042')}></span>Lambda</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={legendDot('#d0ed57')}></span>Others</div>
+          <div style={{ fontSize: 14, marginLeft: 8, color: dark ? '#e5e7eb' : '#222' }}>
+            {costByService.map((item, idx) => (
+              <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={legendDot(chartColors.pie[idx % chartColors.pie.length])}></span>{item.label}
+              </div>
+            ))}
           </div>
         </div>
       </div>
       <div style={{ display: 'flex', gap: 24, marginBottom: 24 }}>
-        <div style={{ ...panelStyle, flex: 2, minWidth: 0 }}>
-          <div style={panelTitleStyle}>Alerts</div>
-          <table style={tableStyle}>
+        <div className="panel" style={{ flex: 2, minWidth: 0 }}>
+          <div className="panel-title">Alerts</div>
+          <table className="dashboard-table">
             <thead>
               <tr>
                 <th>Metric</th>
@@ -154,23 +269,23 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-        <div style={{ ...panelStyle, flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 16, justifyContent: 'space-between' }}>
+        <div className="panel" style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 16, justifyContent: 'space-between' }}>
           <div>
-            <div style={panelTitleStyle}>Reports</div>
-            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 15 }}>
+            <div className="panel-title">Reports</div>
+            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 15, color: dark ? '#e5e7eb' : '#222' }}>
               <li>Monthly Cost Reports</li>
               <li>Scheduled Reports</li>
             </ul>
           </div>
           <div style={{ marginTop: 16 }}>
-            <button style={exportButtonStyle}>Export</button>
+            <button className="export-button">Export</button>
           </div>
         </div>
       </div>
       <div style={{ display: 'flex', gap: 24 }}>
-        <div style={{ ...panelStyle, flex: 2, minWidth: 0 }}>
-          <div style={panelTitleStyle}>Alerts</div>
-          <table style={tableStyle}>
+        <div className="panel" style={{ flex: 2, minWidth: 0 }}>
+          <div className="panel-title">Alerts</div>
+          <table className="dashboard-table">
             <thead>
               <tr>
                 <th>Metric</th>
@@ -187,10 +302,10 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-        <div style={{ ...panelStyle, flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="panel" style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <div style={panelTitleStyle}>Reports</div>
-            <button style={exportButtonStyle}>Export</button>
+            <div className="panel-title">Reports</div>
+            <button className="export-button">Export</button>
           </div>
         </div>
       </div>
@@ -198,30 +313,7 @@ const Dashboard = () => {
   );
 };
 
-const cardStyle = {
-  background: '#fff',
-  borderRadius: 12,
-  boxShadow: '0 1px 4px #e5e7eb',
-  padding: '20px 32px',
-  minWidth: 200,
-  textAlign: 'center',
-  flex: 1,
-};
-const cardTitleStyle = { fontSize: 16, color: '#555', marginBottom: 8 };
-const cardValueStyle = { fontSize: 28, fontWeight: 600, color: '#222' };
-const panelStyle = {
-  background: '#fff',
-  borderRadius: 12,
-  boxShadow: '0 1px 4px #e5e7eb',
-  padding: 20,
-  flex: 1,
-  minWidth: 320,
-};
-const panelTitleStyle = { fontSize: 18, fontWeight: 500, marginBottom: 8 };
-const dropdownStyle = { padding: '4px 10px', borderRadius: 6, border: '1px solid #ddd', marginLeft: 8, fontSize: 14 };
-const tableStyle = { width: '100%', borderCollapse: 'collapse', marginTop: 12, fontSize: 15 };
-const barStyle = { height: 10, background: '#e5e7eb', borderRadius: 4, width: 80, margin: '0 auto' };
-const exportButtonStyle = { width: '100%', padding: '10px 0', borderRadius: 6, background: '#222', color: '#fff', fontWeight: 500, fontSize: 16, border: 'none', marginTop: 16 };
+// barStyle moved inside component to use theme
 const legendDot = (color) => ({ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: color });
 
 export default Dashboard;

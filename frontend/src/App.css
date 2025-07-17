@@ -1,3 +1,367 @@
+/* Dark mode support */
+body.dark, .dark .dashboard-container {
+  background: #181a20 !important;
+  color: #e5e7eb !important;
+}
+
+/* Dashboard cards */
+.dark .dashboard-card {
+  background: #23272f !important;
+  color: #f8fafc !important;
+  box-shadow: 0 1px 4px #11131a !important;
+}
+
+/* Panel styles */
+.dark div[style*="background: #fff"] {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+}
+
+/* Table styles */
+.dark table, .dark th, .dark td {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+}
+
+/* Form elements */
+.dark select, .dark input, .dark button {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+  border-color: #444 !important;
+}
+
+/* Chart components */
+.dark .PieChart, .dark .LineChart {
+  background: #23272f !important;
+}
+
+/* MUI Charts dark theme styling */
+.dark .MuiChartsAxis-line {
+  stroke: #374151 !important;
+}
+
+.dark .MuiChartsAxis-tick {
+  stroke: #374151 !important;
+}
+
+.dark .MuiChartsAxis-tickLabel {
+  fill: #9ca3af !important;
+}
+
+.dark .MuiChartsTooltip-root {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+  border: 1px solid #374151 !important;
+}
+
+.dark .MuiChartsLegend-root {
+  fill: #e5e7eb !important;
+}
+
+/* Chart container styling */
+.dark .recharts-wrapper {
+  background: #23272f !important;
+}
+
+.dark .recharts-cartesian-grid line {
+  stroke: #374151 !important;
+}
+
+.dark .recharts-text {
+  fill: #9ca3af !important;
+}
+
+.dark .recharts-tooltip-wrapper {
+  background: #23272f !important;
+  border: 1px solid #374151 !important;
+  color: #e5e7eb !important;
+}
+
+/* Override inline styles for dark mode */
+.dark [style*="background: #fff"] {
+  background: #23272f !important;
+}
+
+.dark [style*="color: #222"] {
+  color: #e5e7eb !important;
+}
+
+.dark [style*="color: #555"] {
+  color: #9ca3af !important;
+}
+
+.dark [style*="color: black"] {
+  color: #e5e7eb !important;
+}
+
+/* Specific overrides for dashboard elements */
+.dark .dashboard-container {
+  background: #181a20 !important;
+}
+
+.dark .dashboard-container > div {
+  color: #e5e7eb !important;
+}
+
+/* Card title and value styles */
+.dark .dashboard-container [style*="color: #555"] {
+  color: #9ca3af !important;
+}
+
+.dark .dashboard-container [style*="color: #222"] {
+  color: #e5e7eb !important;
+}
+
+/* Button styles */
+.dark .dashboard-container button {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+  border-color: #444 !important;
+}
+
+/* Export button specific */
+.dark .dashboard-container [style*="background: #222"] {
+  background: #00bfff !important;
+  color: #ffffff !important;
+}
+
+/* Catch all dark text overrides */
+.dark .dashboard-container h1,
+.dark .dashboard-container h2,
+.dark .dashboard-container h3,
+.dark .dashboard-container h4,
+.dark .dashboard-container h5,
+.dark .dashboard-container h6 {
+  color: #e5e7eb !important;
+}
+
+.dark .dashboard-container p,
+.dark .dashboard-container span,
+.dark .dashboard-container div,
+.dark .dashboard-container li,
+.dark .dashboard-container ul,
+.dark .dashboard-container ol {
+  color: #e5e7eb !important;
+}
+
+.dark .dashboard-container th,
+.dark .dashboard-container td {
+  color: #e5e7eb !important;
+}
+
+/* Override any remaining hardcoded colors */
+.dark [style*="color: black"],
+.dark [style*="color: #000"],
+.dark [style*="color: #000000"] {
+  color: #e5e7eb !important;
+}
+
+/* Dashboard component styles */
+.dashboard-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px #e5e7eb;
+  padding: 20px 32px;
+  min-width: 200px;
+  text-align: center;
+  flex: 1;
+}
+
+.card-title {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: #222;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px #e5e7eb;
+  padding: 20px;
+  flex: 1;
+  min-width: 320px;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.dropdown {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin-left: 8px;
+  font-size: 14px;
+  background: #fff;
+  color: #222;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 15px;
+}
+
+.export-button {
+  width: 100%;
+  padding: 10px 0;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  font-weight: 500;
+  font-size: 16px;
+  border: none;
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+.chart-label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #222;
+}
+
+/* Dark mode overrides for new classes */
+.dark .dashboard-card {
+  background: #23272f !important;
+  color: #f8fafc !important;
+  box-shadow: 0 1px 4px #11131a !important;
+}
+
+.dark .card-title {
+  color: #9ca3af !important;
+}
+
+.dark .card-value {
+  color: #e5e7eb !important;
+}
+
+.dark .panel {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+  box-shadow: 0 1px 4px #11131a !important;
+}
+
+.dark .panel-title {
+  color: #e5e7eb !important;
+}
+
+.dark .dropdown {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+  border-color: #444 !important;
+}
+
+.dark .dashboard-table {
+  background: #23272f !important;
+  color: #e5e7eb !important;
+}
+
+.dark .export-button {
+  background: #00bfff !important;
+  color: #ffffff !important;
+}
+
+.dark .chart-label {
+  color: #e5e7eb !important;
+}
+
+/* Additional dark theme colors */
+.dark .primary-button {
+  background: #00bfff !important;
+  color: #ffffff !important;
+  border-color: #00bfff !important;
+}
+.dark .primary-button:hover {
+  background: #0099cc !important;
+  border-color: #0099cc !important;
+}
+.dark .secondary-button {
+  background: #2f4f4f !important;
+  color: #e5e7eb !important;
+  border-color: #2f4f4f !important;
+}
+.dark .secondary-button:hover {
+  background: #3f5f5f !important;
+  border-color: #3f5f5f !important;
+}
+.dark .accent-text {
+  color: #ff6347 !important;
+}
+.dark .accent-bg {
+  background: #ff6347 !important;
+  color: #ffffff !important;
+}
+.dark .accent-bg:hover {
+  background: #ff4500 !important;
+}
+.dark .success-text {
+  color: #32cd32 !important;
+}
+.dark .success-bg {
+  background: #32cd32 !important;
+  color: #ffffff !important;
+}
+.dark .warning-text {
+  color: #ffd700 !important;
+}
+.dark .warning-bg {
+  background: #ffd700 !important;
+  color: #000000 !important;
+}
+.dark .error-text {
+  color: #dc143c !important;
+}
+.dark .error-bg {
+  background: #dc143c !important;
+  color: #ffffff !important;
+}
+.dark .info-text {
+  color: #1e90ff !important;
+}
+.dark .info-bg {
+  background: #1e90ff !important;
+  color: #ffffff !important;
+}
+.dark .muted-text {
+  color: #9ca3af !important;
+}
+.dark .border-color {
+  border-color: #374151 !important;
+}
+.dark .hover-bg:hover {
+  background: #374151 !important;
+}
+.dark .sidebar {
+  background: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+.dark .navbar {
+  background: #1f2937 !important;
+  color: #e5e7eb !important;
+  border-bottom: 1px solid #374151 !important;
+}
+.dark .footer {
+  background: #1f2937 !important;
+  color: #9ca3af !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  body, .dashboard-container {
+    background: #181a20;
+    color: #e5e7eb;
+  }
+}
 html, body, #root {
   width: 100vw;
   margin: 0;
