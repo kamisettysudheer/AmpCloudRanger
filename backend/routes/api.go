@@ -18,10 +18,14 @@ func RegisterRoutes(router *gin.Engine) {
 	})
 
 	// Billing endpoint
-	router.GET("/billing", func(c *gin.Context) {
-		// TODO: Implement billing logic
-		c.JSON(200, gin.H{"message": "billing endpoint"})
-	})
+router.GET("/billing", func(c *gin.Context) {
+	billingData, err := services.GetAWSBilling()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, billingData)
+})
 
 	// Alerts endpoints
 	router.GET("/alerts", func(c *gin.Context) {

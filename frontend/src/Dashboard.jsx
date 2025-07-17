@@ -5,17 +5,7 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 import MetricsService from "./api/MetricsService";
 
-// Dummy cost fetcher for now, replace with backend call when available
-const fetchCostByService = async () => {
-  // Simulate backend response
-  return [
-    { id: 0, value: 1200, label: 'EC2' },
-    { id: 1, value: 800, label: 'RDS' },
-    { id: 2, value: 500, label: 'Lambda' },
-    { id: 3, value: 400, label: 'S3' },
-    { id: 4, value: 300, label: 'Other' },
-  ];
-};
+
 
 const Dashboard = () => {
   // Dark mode toggle (must be before any early return)
@@ -35,13 +25,9 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [costByService, setCostByService] = useState([]);
 
-
-
-
   useEffect(() => {
     MetricsService.fetchMetrics()
       .then((data) => {
-        console.log("Fetched metrics:", data);
         // Convert array to object for easy access
         const metricsObj = {};
         (data.metrics || []).forEach(m => {
@@ -54,8 +40,22 @@ const Dashboard = () => {
         setError(err.message || "Failed to fetch metrics");
         setLoading(false);
       });
-    // Fetch cost by service (replace with backend call when available)
-    fetchCostByService().then(setCostByService);
+
+    MetricsService.fetchCostService()
+      .then((billingData) => {
+        console.log("Billing data:", billingData);
+        setCostByService(
+          billingData.map((item, index) => ({
+            id: index,
+            value: item.cost,
+            label: item.service
+          }))
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to fetch cost data:", error);
+        setCostByService([]);
+      });
   }, []);
 
   // Prepare chart data
@@ -69,7 +69,7 @@ const Dashboard = () => {
   // Chart colors based on theme
   const chartColors = {
     cpu: dark ? '#ff6347' : '#8884d8',
-    memory: dark ? '#00bfff' : '#ffc658', 
+    memory: dark ? '#00bfff' : '#ffc658',
     network: dark ? '#32cd32' : '#82ca9d',
     pie: dark ? ['#ff6347', '#00bfff', '#32cd32', '#ffd700', '#dc143c'] : ['#8884d8', '#ffc658', '#82ca9d', '#ff8042', '#d0ed57']
   };
@@ -128,8 +128,8 @@ const Dashboard = () => {
               <div className="chart-label">CPU Usage</div>
               <LineChart
                 xAxis={[{ data: cpuXAxis, scaleType: 'point' }]}
-                series={[{ 
-                  data: cpuData, 
+                series={[{
+                  data: cpuData,
                   color: chartColors.cpu,
                   showMark: true
                 }]}
@@ -155,8 +155,8 @@ const Dashboard = () => {
               <div className="chart-label">Memory Usage</div>
               <LineChart
                 xAxis={[{ data: memXAxis, scaleType: 'point' }]}
-                series={[{ 
-                  data: memData, 
+                series={[{
+                  data: memData,
                   color: chartColors.memory,
                   showMark: true
                 }]}
@@ -182,8 +182,8 @@ const Dashboard = () => {
               <div className="chart-label">Network Traffic</div>
               <LineChart
                 xAxis={[{ data: netXAxis, scaleType: 'point' }]}
-                series={[{ 
-                  data: netData, 
+                series={[{
+                  data: netData,
                   color: chartColors.network,
                   showMark: true
                 }]}
@@ -234,7 +234,7 @@ const Dashboard = () => {
           </div>
           <div style={{ fontSize: 14, marginLeft: 8, color: dark ? '#e5e7eb' : '#222' }}>
             {costByService.map((item, idx) => (
-              <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div key={item.id ?? idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={legendDot(chartColors.pie[idx % chartColors.pie.length])}></span>{item.label}
               </div>
             ))}
